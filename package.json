@@ -1,0 +1,16 @@
+{
+  "title": "Redesigned Octo Parakeet",
+  "name": "redesigned-octo-parakeet",
+  "version": "0.0.1",
+  "description": "A basic add-on for blocking sites during a set of hours",
+  "main": "index.js",
+  "author": "Francisco Mendonça",
+  "engines": {
+    "firefox": ">=38.0a1",
+    "fennec": ">=38.0a1"
+  },
+  "license": "MIT",
+  "keywords": [
+    "jetpack"
+  ]
+}
