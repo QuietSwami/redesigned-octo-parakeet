@@ -1,6 +1,8 @@
 var buttons = require('sdk/ui/button/action');
 var tabs = require('sdk/tabs');
 var handler = require("./urlHandler.js");
+var ss = require("sdk/simple-storage"); //require simple-storage
+
 var button = buttons.ActionButton({
 	id: 'mozilla-link',
 	label: 'Visit Mozilla',
@@ -14,7 +16,8 @@ var button = buttons.ActionButton({
 
 tabs.on('ready', function(tab) {
 	var domain = handler.domainName(tab.url);
-	console.log(domain);
+	
+	
 });
 
 function handleClick(state){
