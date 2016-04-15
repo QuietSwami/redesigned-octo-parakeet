@@ -3,11 +3,18 @@ var panels = require("sdk/panel");
 var data = require("sdk/self").data;
 var tabs = require('sdk/tabs');
 var pageMod = require("sdk/page-mod");
-var file = require("sdk/io/file");
 var storage = require(data.url("storage.js"));
 var time = require(data.url("hour.js"));
-var rules_path = data.url("rules.txt");
-var blacklist_path = data.url("blacklist.txt");
+var tab_url = require(data.url("url.js"));
+
+const fspath = require("sdk/fs/path");
+const {Cc, Ci} = require("chrome");
+
+const currDir = Cc["@mozilla.org/file/directory_service;1"].getService(Ci.nsIDirectoryServiceProvider).getFile("CurWorkD", {}).path;
+
+var blacklist = read_file(fspath.resolve(currDir, 'data/blacklist.txt'));
+var rules = read_file(fspath.resolve(currDir, 'data/rules.txt'));
+
 
 var button = ToggleButton({
   id: "my-button",
@@ -43,22 +50,42 @@ function handleHide() {
 	button.state('window', {checked: false});
 }
 
+tabs.on("ready", function(tab){
+	blacklist.forEach(function(url){
+		if (url === tab.url){
+			pageMod.PageMod({
+				include: ["http://www.record.xl.pt/", "http://www.sapo.pt/", "https://www.facebook.com/*"],
+			  	contentScript: 'document.body.innerHTML = ' +
+			                 ' "<h1>Page matches ruleset</h1>";'
+			});
+
+		}
+	});
+});
+
+
+
+function page_mode(url){
+	
+}
 
 function read_file(path){
 	var text = null;
-	if (file.exists(path)) {
-		var TextReader = file.open(path, "r");
+	var fileIO = require("sdk/io/file");
+	if (fileIO.exists(path)) {
+		var TextReader = fileIO.open(path, "r");
 		if (! TextReader.closed){
 			text = TextReader.read();
 			TextReader.close();
 		}
 	}
-	return text;
+	return text.split("\n");
 }
 
 function write_file(path, text){
-	if (file.exists(path)){
-		var TextReader = file.open(path, "w");
+	var fileIO = require("sdk/io/file");
+	if (fileIO.exists(path)){
+		var TextReader = fileIO.open(path, "w");
 		if (! TextReader.closed){
 			TextReader.write(text);
 			TextReader.close();
