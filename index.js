@@ -51,10 +51,13 @@ function handleHide() {
 }
 
 tabs.on("ready", function(tab){
+	console.log(tab.url);
+	console.log(tab_url.url_decomposer(tab.url)[2]);	
 	blacklist.forEach(function(url){
-		if (url === tab.url){
+		if (tab_url.url_decomposer(url)[2] === tab_url.url_decomposer(tab.url)[2]){
+			console.log("aqui");
 			pageMod.PageMod({
-				include: ["http://www.record.xl.pt/", "http://www.sapo.pt/", "https://www.facebook.com/*"],
+				include: tab.url,
 			  	contentScript: 'document.body.innerHTML = ' +
 			                 ' "<h1>Page matches ruleset</h1>";'
 			});
@@ -63,11 +66,13 @@ tabs.on("ready", function(tab){
 	});
 });
 
+pageMod.PageMod({
+	include: "*",
+  	contentScript: 'document.body.innerHTML = ' +
+                 ' "<h1>Page matches ruleset</h1>";'
+});
 
 
-function page_mode(url){
-	
-}
 
 function read_file(path){
 	var text = null;
