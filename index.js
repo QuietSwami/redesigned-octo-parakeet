@@ -13,8 +13,9 @@ const {Cc, Ci} = require("chrome");
 const currDir = Cc["@mozilla.org/file/directory_service;1"].getService(Ci.nsIDirectoryServiceProvider).getFile("CurWorkD", {}).path;
 
 var blacklist = read_file(fspath.resolve(currDir, 'data/blacklist.txt'));
-var rules = read_file(fspath.resolve(currDir, 'data/rules.txt'));
+var rules = fspath.resolve(currDir, 'data/rules.txt');
 
+var rules_objects = read_file(rules);
 
 var button = ToggleButton({
   id: "my-button",
@@ -50,26 +51,15 @@ function handleHide() {
 	button.state('window', {checked: false});
 }
 
-tabs.on("ready", function(tab){
-	console.log(tab.url);
-	console.log(tab_url.url_decomposer(tab.url)[2]);	
-	blacklist.forEach(function(url){
-		if (tab_url.url_decomposer(url)[2] === tab_url.url_decomposer(tab.url)[2]){
-			console.log("aqui");
-			pageMod.PageMod({
-				include: tab.url,
-			  	contentScript: 'document.body.innerHTML = ' +
-			                 ' "<h1>Page matches ruleset</h1>";'
-			});
-
-		}
-	});
-});
-
 pageMod.PageMod({
 	include: "*",
-  	contentScript: 'document.body.innerHTML = ' +
-                 ' "<h1>Page matches ruleset</h1>";'
+  	contentScriptFile: [data.url("moment.js"), data.url("blocking.js")],
+  	onAttach: function(worker){
+  		worker.port.emit("block", rules_objects);
+  		worker.port.on("blocked", function(send){
+  			console.log(send);
+  		})
+  	}
 });
 
 

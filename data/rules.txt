@@ -1,0 +1,1 @@
+{"starting_time":"7:00","ending_time":"18:00"}
