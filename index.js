@@ -15,9 +15,7 @@ const currDir = Cc["@mozilla.org/file/directory_service;1"].getService(Ci.nsIDir
 var blacklist = tab_url.url_multiplier(read_file(fspath.resolve(currDir, 'data/blacklist.txt')));
 var rules = fspath.resolve(currDir, 'data/rules.txt');
 
-console.log(blacklist);
-
-var rules_objects = read_file(rules);
+var rules_objects = read_file(rules)[0];
 
 var button = ToggleButton({
   id: "my-button",
@@ -33,8 +31,9 @@ var button = ToggleButton({
 
 var panel = panels.Panel({
   width: 1080,
+  height: 600,
   contentURL: data.url("options.html"),
-  contentScriptFile: [data.url("jquery.js"), data.url("bootstrap.min.js")],
+  contentScriptFile: [data.url("jquery.js"), data.url("bootstrap.min.js"), data.url("options.js")],
   contentStyleFile: [data.url("bootstrap.min.css"), data.url("home.css")],
   onHide: handleHide
 });
@@ -60,11 +59,26 @@ pageMod.PageMod({
   		worker.port.emit("block", rules_objects);
   		worker.port.on("blocked", function(send){
   			console.log(send);
-  		})
+  		});
   	}
 });
 
+panel.on("show", function(){
+  panel.port.emit("show", [blacklist, rules_objects])
+});
 
+panel.on("hide", function(){
+  panel.port.emit("hide");
+});
+
+panel.on("get_rule", function(rule){
+	//to hold what happens when a new rule is formed
+});
+
+
+panel.on("get_blacklist", function(blacklist){
+	//to hol what happens when a new site is added to the blacklist
+});
 
 function read_file(path){
 	var text = null;
