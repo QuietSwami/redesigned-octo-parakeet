@@ -12,8 +12,10 @@ const {Cc, Ci} = require("chrome");
 
 const currDir = Cc["@mozilla.org/file/directory_service;1"].getService(Ci.nsIDirectoryServiceProvider).getFile("CurWorkD", {}).path;
 
-var blacklist = read_file(fspath.resolve(currDir, 'data/blacklist.txt'));
+var blacklist = tab_url.url_multiplier(read_file(fspath.resolve(currDir, 'data/blacklist.txt')));
 var rules = fspath.resolve(currDir, 'data/rules.txt');
+
+console.log(blacklist);
 
 var rules_objects = read_file(rules);
 
@@ -52,7 +54,7 @@ function handleHide() {
 }
 
 pageMod.PageMod({
-	include: "*",
+	include: blacklist,
   	contentScriptFile: [data.url("moment.js"), data.url("blocking.js")],
   	onAttach: function(worker){
   		worker.port.emit("block", rules_objects);
