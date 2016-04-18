@@ -1,4 +1,5 @@
 var { ToggleButton } = require('sdk/ui/button/toggle');
+var ss = require("sdk/simple-storage");
 var panels = require("sdk/panel");
 var data = require("sdk/self").data;
 var tabs = require('sdk/tabs');
@@ -94,6 +95,10 @@ function read_file(path){
 		}
 	}
 	return text.split("\n");
+}
+
+function save_blacklist(blacklist){
+  ss.storage.blacklist = blacklist;
 }
 
 function write_file(path, text){
