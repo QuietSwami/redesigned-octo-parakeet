@@ -9,24 +9,29 @@ self.port.on("show", function(array){
 			$("#blacklist").append('<div class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close" id="'+url+'"><span aria-hidden="true">&times;</span></button>'+ url +'</div>')
 		}
 	});
-	$("#rules").append('<div class="alert alert-success alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>Rule #1</strong> Starting Time: ' + rules.starting_time + '; Ending Time: '+ rules.ending_time+'</div>');
+	$("#rules").append('<div class="alert alert-success alert-dismissible" role="alert"><button type="button" id="rule" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>Rule #1</strong> Starting Time: ' + rules.starting_time + '; Ending Time: '+ rules.ending_time+'</div>');
+	$(".close").on("click", function(){
+		var temp = [];
+		var id = $(this).attr('id');
+		blacklist.forEach(function(url){
+			if (url[url.length - 1] === "*"){
+				if (url != id + "*"){
+					temp.push(url);
+				}
+			}
+			else{
+				if(url != id){
+					temp.push(url);
+				}
+			}
+
+		});
+		blacklist = temp;
+		self.port.emit("blacklist_change", blacklist);
+	});
+
 });
 
-$("#blacklist").on("click", function(){
-	console.log("aqui");
-	console.log($(this).children('div'));
-	/*console.log("aqui");
-	var id = $this.id;
-	var temp = [];
-	blacklist.forEach(function(url){
-		if (url != id){
-			temp.push(url);
-		}
-	});
-	console.log(temp);
-	blacklist = temp;
-	self.port.emit("blacklist_change", blacklist);*/
-});
 
 
 self.port.on("hide", function(){

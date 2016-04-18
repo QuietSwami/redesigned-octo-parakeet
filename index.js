@@ -64,7 +64,10 @@ pageMod.PageMod({
 });
 
 panel.on("show", function(){
-  panel.port.emit("show", [blacklist, rules_objects])
+  panel.port.emit("show", [blacklist, rules_objects]);
+  panel.port.on("blacklist_change", function(blacklist){
+    console.log(blacklist);
+  });
 });
 
 panel.on("hide", function(){
