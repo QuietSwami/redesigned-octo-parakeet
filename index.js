@@ -4,20 +4,16 @@ var panels = require("sdk/panel");
 var data = require("sdk/self").data;
 var tabs = require('sdk/tabs');
 var pageMod = require("sdk/page-mod");
-var storage = require(data.url("storage.js"));
-var time = require(data.url("hour.js"));
-var tab_url = require(data.url("url.js"));
+var lib = require(data.url("lib.js"));
 
-const fspath = require("sdk/fs/path");
-const {Cc, Ci} = require("chrome");
+if (! ss.storage.blacklist){
+  ss.storage.blacklist = ["https://www.facebook.com/"];
+}
 
-const currDir = Cc["@mozilla.org/file/directory_service;1"].getService(Ci.nsIDirectoryServiceProvider).getFile("CurWorkD", {}).path;
+if (! ss.storage.rules){
+  ss.storage.rules = [];
+}
 
-var blacklist_path = fspath.resolve(currDir, 'data/blacklist.txt') //lets keep this for now
-
-var rules = fspath.resolve(currDir, 'data/rules.txt');
-
-var rules_objects = read_file(rules)[0];
 
 var button = ToggleButton({
   id: "my-button",
@@ -55,12 +51,12 @@ function handleHide() {
 }
 
 
-var blacklist = tab_url.url_multiplier(read_file(blacklist_path));
+
 pageMod.PageMod({
-	include: blacklist,
+	include: ss.storage.blacklist,
   	contentScriptFile: [data.url("moment.js"), data.url("blocking.js")],
   	onAttach: function(worker){
-  		worker.port.emit("block", rules_objects);
+  		worker.port.emit("block", ss.storage.rules);
   		worker.port.on("blocked", function(send){
   			console.log(send);
   		});
@@ -68,12 +64,13 @@ pageMod.PageMod({
 });
 
 panel.on("show", function(){
-  var blacklist = tab_url.url_multiplier(read_file(blacklist_path));
-  console.log(blacklist);
-  panel.port.emit("show", [blacklist, rules_objects]);
-  panel.port.on("blacklist_change", function(blacklist){
-    write_file(blacklist_path, blacklist);
-  });
+  var blacklist = lib.multiplier(ss.storage.blacklist);
+  var rules = ss.storage.rules;
+  panel.port.emit("show", [blacklist, rules]);
+});
+
+panel.port.on("blacklist_change", function(blacklist){
+  save_blacklist(blacklist);
 });
 
 panel.on("hide", function(){
@@ -85,42 +82,9 @@ panel.on("get_rule", function(rule){
 });
 
 
-panel.on("get_blacklist", function(blacklist){
-	//to hol what happens when a new site is added to the blacklist
-});
-
-function read_file(path){
-	var text = null;
-	var fileIO = require("sdk/io/file");
-	if (fileIO.exists(path)) {
-		var TextReader = fileIO.open(path, "r");
-		if (! TextReader.closed){
-			text = TextReader.read();
-			TextReader.close();
-		}
-	}
-	return text.split("\n");
+function save_rules(rules){
+  ss.storage.rules = rules;
 }
-
-<<<<<<< HEAD
-function write_file(path, array){
-=======
 function save_blacklist(blacklist){
   ss.storage.blacklist = blacklist;
-}
-
-function write_file(path, text){
->>>>>>> 2733a999fe5ecae6aceabaad8c2e61a6a955e725
-	var fileIO = require("sdk/io/file");
-	if (fileIO.exists(path)){
-		var TextReader = fileIO.open(path, "w");
-		if (! TextReader.closed){
-      array.forEach(function(url){
-        if (url[url.length - 1] =! "*"){
-          TextReader.writer(url + '\n');
-        }
-      });
-			TextReader.close();
-		}
-	}
 }

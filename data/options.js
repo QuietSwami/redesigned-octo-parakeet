@@ -3,7 +3,7 @@ var rules;
 
 self.port.on("show", function(array){
 	blacklist = array[0];
-	rules = JSON.parse(array[1]);
+	rules = array[1];
 	blacklist.forEach(function(url){
 		if (url[url.length - 1] != "*"){
 			$('#sites').append('<div id="site" class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close" id="'+url+'"><span aria-hidden="true">&times;</span></button>'+ url +'</div>');
@@ -17,7 +17,7 @@ self.port.on("show", function(array){
 		}
 		else if(parent_id === 'site'){
 			console.log($(this).attr("id"));
-			/*var temp = [];
+			var temp = [];
 			var id = $(this).attr('id');
 			blacklist.forEach(function(url){
 				if (url[url.length - 1] === "*"){
@@ -32,14 +32,20 @@ self.port.on("show", function(array){
 				}
 			});
 			blacklist = temp;
-			self.port.emit("blacklist_change", blacklist);*/
+			self.port.emit("blacklist_change", blacklist);
 		}
 		
 	});
 	$('#block').click(function(){
-		var site = $("#site").val();
-		if (val.length === 0){
-			
+		console.log("asd");
+		var site = $("#to_add").val();
+		if (site.length !== 0){
+			console.log(site);
+			blacklist.push(site);
+			self.port.emit("blacklist_change", blacklist);
+			$("#to_add").val(" ");
+			$('#sites').append('<div id="site" class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close" id="'+site+'"><span aria-hidden="true">&times;</span></button>'+ site +'</div>');
+
 		}
 	});
 
