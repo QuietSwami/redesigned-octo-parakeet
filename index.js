@@ -12,7 +12,8 @@ const {Cc, Ci} = require("chrome");
 
 const currDir = Cc["@mozilla.org/file/directory_service;1"].getService(Ci.nsIDirectoryServiceProvider).getFile("CurWorkD", {}).path;
 
-var blacklist = tab_url.url_multiplier(read_file(fspath.resolve(currDir, 'data/blacklist.txt')));
+var blacklist_path = fspath.resolve(currDir, 'data/blacklist.txt') //lets keep this for now
+
 var rules = fspath.resolve(currDir, 'data/rules.txt');
 
 var rules_objects = read_file(rules)[0];
@@ -52,6 +53,8 @@ function handleHide() {
 	button.state('window', {checked: false});
 }
 
+
+var blacklist = tab_url.url_multiplier(read_file(blacklist_path));
 pageMod.PageMod({
 	include: blacklist,
   	contentScriptFile: [data.url("moment.js"), data.url("blocking.js")],
@@ -64,9 +67,11 @@ pageMod.PageMod({
 });
 
 panel.on("show", function(){
+  var blacklist = tab_url.url_multiplier(read_file(blacklist_path));
+  console.log(blacklist);
   panel.port.emit("show", [blacklist, rules_objects]);
   panel.port.on("blacklist_change", function(blacklist){
-    console.log(blacklist);
+    write_file(blacklist_path, blacklist);
   });
 });
 
@@ -96,12 +101,16 @@ function read_file(path){
 	return text.split("\n");
 }
 
-function write_file(path, text){
+function write_file(path, array){
 	var fileIO = require("sdk/io/file");
 	if (fileIO.exists(path)){
 		var TextReader = fileIO.open(path, "w");
 		if (! TextReader.closed){
-			TextReader.write(text);
+      array.forEach(function(url){
+        if (url[url.length - 1] =! "*"){
+          TextReader.writer(url + '\n');
+        }
+      });
 			TextReader.close();
 		}
 	}
