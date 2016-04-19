@@ -30,11 +30,11 @@ var button = ToggleButton({
 
 
 var panel = panels.Panel({
-  width: 1080,
-  height: 600,
-  contentURL: data.url("options.html"),
-  contentScriptFile: [data.url("jquery.js"), data.url("bootstrap.min.js"), data.url("options.js")],
-  contentStyleFile: [data.url("bootstrap.min.css"), data.url("home.css")],
+  width: 180,
+  height: 180,
+  contentURL: data.url("menu.html"),
+  contentScriptFile: [data.url("jquery.js"), data.url("bootstrap.min.js"), data.url("menu.js")],
+  contentStyleFile: [data.url("bootstrap.min.css")],
   onHide: handleHide
 });
 
