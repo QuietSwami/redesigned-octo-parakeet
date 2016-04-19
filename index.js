@@ -1,4 +1,5 @@
 var { ToggleButton } = require('sdk/ui/button/toggle');
+var ss = require("sdk/simple-storage");
 var panels = require("sdk/panel");
 var data = require("sdk/self").data;
 var tabs = require('sdk/tabs');
@@ -101,7 +102,15 @@ function read_file(path){
 	return text.split("\n");
 }
 
+<<<<<<< HEAD
 function write_file(path, array){
+=======
+function save_blacklist(blacklist){
+  ss.storage.blacklist = blacklist;
+}
+
+function write_file(path, text){
+>>>>>>> 2733a999fe5ecae6aceabaad8c2e61a6a955e725
 	var fileIO = require("sdk/io/file");
 	if (fileIO.exists(path)){
 		var TextReader = fileIO.open(path, "w");
