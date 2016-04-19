@@ -5,13 +5,15 @@ var data = require("sdk/self").data;
 var tabs = require('sdk/tabs');
 var pageMod = require("sdk/page-mod");
 var lib = require(data.url("lib.js"));
+var open_tabs = [];
+
 
 if (! ss.storage.blacklist){
-  ss.storage.blacklist = ["https://www.facebook.com/"];
+  ss.storage.blacklist = ["http://www.record.xl.pt/"];
 }
 
 if (! ss.storage.rules){
-  ss.storage.rules = [];
+  ss.storage.rules = [{"number":1, "starting_time": "7:00", "ending_time": "23:00", "days_of_week": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]}];
 }
 
 
@@ -50,18 +52,39 @@ function handleHide() {
 	button.state('window', {checked: false});
 }
 
+function onOpen(tab) {
+/*  console.log(tab.url + " is open");*/
+  tab.on("pageshow", logShow);
+/*  tab.on("activate", logActivate);
+  tab.on("deactivate", logDeactivate);
+  tab.on("close", logClose);*/ 
+}
 
+function logShow(tab) {
+  var worker = tab.attach({
+    contentScriptFile: [data.url('moment.js'), data.url("blocking.js")]
+  });
+  worker.port.emit("url", [tab.url, ss.storage.blacklist, ss.storage.rules]);
+  worker.port.on('block', function(){
+    tab.url = data.url("blocked.html");
+  });
 
-pageMod.PageMod({
-	include: ss.storage.blacklist,
-  	contentScriptFile: [data.url("moment.js"), data.url("blocking.js")],
-  	onAttach: function(worker){
-  		worker.port.emit("block", ss.storage.rules);
-  		worker.port.on("blocked", function(send){
-  			console.log(send);
-  		});
-  	}
-});
+}
+
+/*function logActivate(tab) {
+  console.log(tab.url + " is activated");
+}
+
+function logDeactivate(tab) {
+  console.log(tab.url + " is deactivated");
+}
+
+function logClose(tab) {
+  console.log(tab.url + " is closed");
+}*/
+
+tabs.on('open', onOpen);
+
 
 panel.on("show", function(){
   var blacklist = lib.multiplier(ss.storage.blacklist);
@@ -85,6 +108,7 @@ panel.on("get_rule", function(rule){
 function save_rules(rules){
   ss.storage.rules = rules;
 }
+
 function save_blacklist(blacklist){
   ss.storage.blacklist = blacklist;
 }

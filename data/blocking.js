@@ -1,19 +1,29 @@
-self.port.on("block", function(rules){
-	var rules = rules;
-	if (rules.length !== 0){
-		var start_time = moment(rules.starting_time, "HH:mm").format();
-		var end_time = moment(rules.ending_time, "HH:mm").format();
-		var now  = moment().format();
-		if (now > start_time && now < end_time){
-			document.body.innerHTML = '<h1>You need to be working right now....</h1>'
-		}
+function ruleChecker(rule){
+	var now = moment().format('HH:mm');
+	var today = moment().format('dddd');
+	var start_time = moment(rule.starting_time, "HH:mm").format("HH:mm");
+	var end_time = moment(rule.ending_time, "HH:mm").format("HH:mm");
+	var days_of_week = rule.days_of_week;
+	if (now > start_time && now < end_time && days_of_week.indexOf(today) != -1){
+		console.log("yoo");
+		return true;
 	}
-/*	for (var i = 0; i < rules_objects.length; i++){]);
-		if (rules_objects[i] != ""){
-			var rule = JSON.parse(rules_objects[i]);
-			rules.push(rule);
+	return false;
+}
+
+
+self.port.on("url", function(array){
+	var url = array[0];
+	console.log(url);
+	var blacklist = array[1];
+	console.log(blacklist);
+	var rules = array[2];
+	rules.forEach(function(rule){
+		var check = ruleChecker(rule);
+		if (check && blacklist.indexOf(url) != -1){
+			self.port.emit('block');
 		}
-	}    TODO: This is for when the day of the week is working*/
+	});
 
 
 });

@@ -37,7 +37,6 @@ self.port.on("show", function(array){
 		
 	});
 	$('#block').click(function(){
-		console.log("asd");
 		var site = $("#to_add").val();
 		if (site.length !== 0){
 			console.log(site);
