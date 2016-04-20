@@ -1,9 +1,17 @@
 var blacklist;
 var rules;
-$("#day").each(function(i, obj){
-	console.log(obj.val());
-})
-
+$("#add_rule").click(function(){
+	var starting_time = $("#start_hour").val() + ":" + $("#start_minutes").val();
+	var ending_time = $("#ending_hour").val() + ":" + $("#ending_minutes").val();
+	var days_of_week = []
+	$("input[type=checkbox]").each(function(){
+		if ($(this).prop('checked')){
+			days_of_week.push($(this).val());
+		}
+	});
+	self.port.emit('new_rule', {"starting_time":starting_time, "ending_time":ending_time, "days_of_week": days_of_week});
+	location.reload();
+});  	
 
 
 self.port.on("show", function(array){
@@ -14,16 +22,21 @@ self.port.on("show", function(array){
 			$('#sites').append('<div id="site" class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close" id="'+url+'"><span aria-hidden="true">&times;</span></button>'+ url +'</div>');
 		}
 	});
+	var counter=0;
 	rules.forEach(function(rule){
-		$("#rules").append('<div id="rule" class="alert alert-success alert-dismissible" role="alert"><button type="button" id="rule" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>Rule #'+rule.number+'</strong> Starting Time: ' + rule.starting_time + '; Ending Time: '+ rule.ending_time+'</div>');
+		counter += 1;
+		var days = "";
+		rule.days_of_week.forEach(function(day){
+			days+=day += ", ";
+		});
+		$("#rules").append('<div id="rule" class="alert alert-success alert-dismissible" role="alert"><button type="button" id="rule" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>Rule #'+counter+'</strong> Starting Time: ' + rule.starting_time + '; Ending Time: '+ rule.ending_time+'; Days of week: '+ days+'</div>');
 	});
 	$(".close").on("click", function(){
 		var parent_id = $(this).closest("div").attr("id");
 		if(parent_id === 'rule'){
-			console.log('ruling you');
+			
 		}
 		else if(parent_id === 'site'){
-			console.log($(this).attr("id"));
 			var temp = [];
 			var id = $(this).attr('id');
 			blacklist.forEach(function(url){
@@ -55,10 +68,3 @@ self.port.on("show", function(array){
 	});
 
 });
-
-
-/*
-self.port.on("hide", function(){
-	$("#sites").empty();
-	$("#rules").empty();
-})*/

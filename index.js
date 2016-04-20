@@ -78,6 +78,10 @@ panel.port.on("options", function(){
         worker.port.on("blacklist_change", function(blacklist){
           save_blacklist(blacklist);
         });
+        worker.port.on("new_rule", function(rule){
+          ss.storage.rules.push(rule);
+          console.log(ss.storage.rules); 
+        })
       });  
     }
   }); 
