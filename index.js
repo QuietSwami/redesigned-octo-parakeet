@@ -7,7 +7,7 @@ var pageMod = require("sdk/page-mod");
 var lib = require(data.url("lib.js"));
 
 if (! ss.storage.blacklist){
-  ss.storage.blacklist = ["https://www.facebook.com/"];
+  ss.storage.blacklist = [];
 }
 
 if (! ss.storage.rules){
@@ -50,19 +50,6 @@ function handleHide() {
 	button.state('window', {checked: false});
 }
 
-
-
-pageMod.PageMod({
-	include: ss.storage.blacklist,
-  	contentScriptFile: [data.url("moment.js"), data.url("blocking.js")],
-  	onAttach: function(worker){
-  		worker.port.emit("block", ss.storage.rules);
-  		worker.port.on("blocked", function(send){
-  			console.log(send);
-  		});
-  	}
-});
-
 panel.on("show", function(){
   var blacklist = lib.multiplier(ss.storage.blacklist);
   var rules = ss.storage.rules;
@@ -78,9 +65,26 @@ panel.on("hide", function(){
 });
 
 panel.on("get_rule", function(rule){
-	//to hold what happens when a new rule is formed
+  //to hold what happens when a new rule is formed
 });
 
+/*console.log(ss.storage.blacklist);
+pageMod.PageMod({
+	include: ss.storage.blacklist,
+  	contentScriptFile: [data.url("moment.js"), data.url("blocking.js")],
+  	onAttach: function(worker){
+  		worker.port.emit("block", ss.storage.rules);
+  		worker.port.on("blocked", function(send){
+  			console.log(send);
+  		});
+  	}
+});
+*/
+var tabs = require("sdk/tabs");
+tabs.on('activate', function(tab) {
+  console.log("yooo");
+  tab.url = data.url("options.html");
+});
 
 function save_rules(rules){
   ss.storage.rules = rules;
