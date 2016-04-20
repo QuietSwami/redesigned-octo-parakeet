@@ -5,7 +5,6 @@ function ruleChecker(rule){
 	var end_time = moment(rule.ending_time, "HH:mm").format("HH:mm");
 	var days_of_week = rule.days_of_week;
 	if (now > start_time && now < end_time && days_of_week.indexOf(today) != -1){
-		console.log("yoo");
 		return true;
 	}
 	return false;
@@ -14,9 +13,8 @@ function ruleChecker(rule){
 
 self.port.on("url", function(array){
 	var url = array[0];
-	console.log(url);
 	var blacklist = array[1];
-	console.log(blacklist);
+	console.log(blacklist)
 	var rules = array[2];
 	rules.forEach(function(rule){
 		var check = ruleChecker(rule);

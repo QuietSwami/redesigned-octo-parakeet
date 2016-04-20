@@ -8,7 +8,7 @@ var lib = require(data.url("lib.js"));
 
 
 if (! ss.storage.blacklist){
-  ss.storage.blacklist = ["http://www.record.xl.pt/"];
+  ss.storage.blacklist = [];
 }
 
 if (! ss.storage.rules){
@@ -33,7 +33,7 @@ var panel = panels.Panel({
   height: 180,
   contentURL: data.url("menu.html"),
   contentScriptFile: [data.url("jquery.js"), data.url("bootstrap.min.js"), data.url("menu.js")],
-  contentStyleFile: [data.url("bootstrap.min.css")],
+  contentStyleFile: data.url('menu.css'),
   onHide: handleHide
 });
 
@@ -51,58 +51,37 @@ function handleHide() {
 	button.state('window', {checked: false});
 }
 
-function onOpen(tab) {
-/*  console.log(tab.url + " is open");*/
-  tab.on("pageshow", logShow);
-/*  tab.on("activate", logActivate);
-  tab.on("deactivate", logDeactivate);
-  tab.on("close", logClose);*/ 
-}
-
-function logShow(tab) {
+tabs.on('ready', function(tab){
+  var blacklist = ss.storage.blacklist;
+  for (i=0; i<blacklist.length; i++){
+    console.log(blacklist[i]);
+  }
   var worker = tab.attach({
     contentScriptFile: [data.url('moment.js'), data.url("blocking.js")]
   });
   worker.port.emit("url", [tab.url, ss.storage.blacklist, ss.storage.rules]);
   worker.port.on('block', function(){
     tab.url = data.url("blocked.html");
-  });
-
-}
-
-/*function logActivate(tab) {
-  console.log(tab.url + " is activated");
-}
-
-function logDeactivate(tab) {
-  console.log(tab.url + " is deactivated");
-}
-
-function logClose(tab) {
-  console.log(tab.url + " is closed");
-}*/
-
-tabs.on('open', onOpen);
-
-
-panel.on("show", function(){
-  var blacklist = lib.multiplier(ss.storage.blacklist);
-  var rules = ss.storage.rules;
-  panel.port.emit("show", [blacklist, rules]);
+  }); 
 });
 
-panel.port.on("blacklist_change", function(blacklist){
-  save_blacklist(blacklist);
+panel.port.on("options", function(){
+  tabs.open({
+    url: data.url("options.html"),
+    onOpen: function options(tab) {
+      tab.on("pageshow", function(tab){
+        var worker = tab.attach({
+          contentScriptFile: [data.url("jquery.js"), data.url("bootstrap.min.js"),data.url("options.js")],
+          contentStyleFile: [data.url("bootstrap.css"), data.url('home.css')]
+        });
+        worker.port.emit("show", [ss.storage.blacklist, ss.storage.rules]);
+        worker.port.on("blacklist_change", function(blacklist){
+          save_blacklist(blacklist);
+        });
+      });  
+    }
+  }); 
 });
-
-panel.on("hide", function(){
-  panel.port.emit("hide");
-});
-
-panel.on("get_rule", function(rule){
-	//to hold what happens when a new rule is formed
-});
-
 
 function save_rules(rules){
   ss.storage.rules = rules;
