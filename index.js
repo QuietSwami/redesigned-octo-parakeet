@@ -5,7 +5,6 @@ var data = require("sdk/self").data;
 var tabs = require('sdk/tabs');
 var pageMod = require("sdk/page-mod");
 var lib = require(data.url("lib.js"));
-var open_tabs = [];
 
 
 if (! ss.storage.blacklist){
