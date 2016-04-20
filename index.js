@@ -9,11 +9,7 @@ var open_tabs = [];
 
 
 if (! ss.storage.blacklist){
-<<<<<<< HEAD
   ss.storage.blacklist = [];
-=======
-  ss.storage.blacklist = ["http://www.record.xl.pt/"];
->>>>>>> c6dfc3941b5fc5752375497ee2b7cb751df4ea8e
 }
 
 if (! ss.storage.rules){
@@ -38,7 +34,7 @@ var panel = panels.Panel({
   height: 180,
   contentURL: data.url("menu.html"),
   contentScriptFile: [data.url("jquery.js"), data.url("bootstrap.min.js"), data.url("menu.js")],
-  contentStyleFile: [data.url("bootstrap.min.css")],
+  contentStyleFile: data.url('menu.css'),
   onHide: handleHide
 });
 
@@ -56,77 +52,36 @@ function handleHide() {
 	button.state('window', {checked: false});
 }
 
-<<<<<<< HEAD
-=======
-function onOpen(tab) {
-/*  console.log(tab.url + " is open");*/
-  tab.on("pageshow", logShow);
-/*  tab.on("activate", logActivate);
-  tab.on("deactivate", logDeactivate);
-  tab.on("close", logClose);*/ 
-}
-
-function logShow(tab) {
+tabs.on('ready', function(tab){
+  var blacklist = ss.storage.blacklist;
+  for (i=0; i<blacklist.length; i++){
+    console.log(blacklist[i]);
+  }
   var worker = tab.attach({
     contentScriptFile: [data.url('moment.js'), data.url("blocking.js")]
   });
   worker.port.emit("url", [tab.url, ss.storage.blacklist, ss.storage.rules]);
   worker.port.on('block', function(){
     tab.url = data.url("blocked.html");
-  });
-
-}
-
-/*function logActivate(tab) {
-  console.log(tab.url + " is activated");
-}
-
-function logDeactivate(tab) {
-  console.log(tab.url + " is deactivated");
-}
-
-function logClose(tab) {
-  console.log(tab.url + " is closed");
-}*/
-
-tabs.on('open', onOpen);
-
-
->>>>>>> c6dfc3941b5fc5752375497ee2b7cb751df4ea8e
-panel.on("show", function(){
-  var blacklist = lib.multiplier(ss.storage.blacklist);
-  var rules = ss.storage.rules;
-  panel.port.emit("show", [blacklist, rules]);
+  }); 
 });
 
-panel.port.on("blacklist_change", function(blacklist){
-  save_blacklist(blacklist);
-});
-
-panel.on("hide", function(){
-  panel.port.emit("hide");
-});
-
-panel.on("get_rule", function(rule){
-  //to hold what happens when a new rule is formed
-});
-
-/*console.log(ss.storage.blacklist);
-pageMod.PageMod({
-	include: ss.storage.blacklist,
-  	contentScriptFile: [data.url("moment.js"), data.url("blocking.js")],
-  	onAttach: function(worker){
-  		worker.port.emit("block", ss.storage.rules);
-  		worker.port.on("blocked", function(send){
-  			console.log(send);
-  		});
-  	}
-});
-*/
-var tabs = require("sdk/tabs");
-tabs.on('activate', function(tab) {
-  console.log("yooo");
-  tab.url = data.url("options.html");
+panel.port.on("options", function(){
+  tabs.open({
+    url: data.url("options.html"),
+    onOpen: function options(tab) {
+      tab.on("pageshow", function(tab){
+        var worker = tab.attach({
+          contentScriptFile: [data.url("jquery.js"), data.url("bootstrap.min.js"),data.url("options.js")],
+          contentStyleFile: [data.url("bootstrap.css"), data.url('home.css')]
+        });
+        worker.port.emit("show", [ss.storage.blacklist, ss.storage.rules]);
+        worker.port.on("blacklist_change", function(blacklist){
+          save_blacklist(blacklist);
+        });
+      });  
+    }
+  }); 
 });
 
 function save_rules(rules){
