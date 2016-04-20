@@ -33,7 +33,68 @@
 		                    <div class="tab-content">
 		                        <div class="tab-pane fade in active" id="rules"></div>
 		                        <div class="tab-pane fade" id="new-rule">
-		                        	
+		                        	<label class='control-label'>Starting Time</label>
+		                        	<div class="row">
+									  <div class="col-xs-3">
+									    <div class="input-group">
+									      <span class="input-group-addon">
+									        H
+									      </span>
+									      <input type="number" min="00" max="23" id="start_hour" class="form-control" aria-label="...">
+									    </div>
+									  </div>
+									  <div class="col-xs-3">
+									    <div class="input-group">
+									      <span class="input-group-addon">
+									        Min
+									      </span>
+									      <input type="number" min="00" max="59" id="start_minutes" class="form-control" aria-label="...">
+									    </div>
+									  </div>
+									</div>
+									<br>
+									<label class='control-label'>Ending Time</label>
+		                        	<div class="row">
+									  <div class="col-xs-3">
+									    <div class="input-group">
+									      <span class="input-group-addon">
+									        H
+									      </span>
+									      <input type="number" min="00" max="23" id="ending_hour" class="form-control" aria-label="...">
+									    </div>
+									  </div>
+									  <div class="col-xs-3">
+									    <div class="input-group">
+									      <span class="input-group-addon">
+									        Min
+									      </span>
+									      <input type="number" min="00" max="59" id="ending_minutes" class="form-control" aria-label="...">
+									    </div>
+									  </div>
+									</div>
+									<br>
+									<label class='control-label'>Days of the Week</label>
+		                        	<div class="row">
+									  <div class="col-xs-12">
+									    <div class="input-group">
+									       <label class="checkbox-inline"><input id="day" type="checkbox" value="Monday">Monday</label>
+											<label class="checkbox-inline"><input id="day" type="checkbox" value="Tuesday">Tuesday</label>
+											<label class="checkbox-inline"><input id="day" type="checkbox" value="Wednesday">Wednesday</label>
+											<label class="checkbox-inline"><input id="day" type="checkbox" value="Thursday">Thursday</label>
+											<label class="checkbox-inline"><input id="day" type="checkbox" value="Friday">Friday</label>
+											<label class="checkbox-inline"><input id="day" type="checkbox" value="Saturday">Saturday</label>
+											<label class="checkbox-inline"><input id="day" type="checkbox" value="Sunday">Sunday</label>
+									    </div>
+									  </div>
+									</div>
+									<br>
+									<div class="row">
+										<div class="col-xs-12">
+											<div class="input-group pull-right">
+												<button type="button" class="btn btn-success btn-md">Add Rule</button>
+											</div>
+										</div>
+									</div>
 		                        </div>
 		                        <div class="tab-pane fade" id="blacklist">
 		                        	<div id='sites'></div>

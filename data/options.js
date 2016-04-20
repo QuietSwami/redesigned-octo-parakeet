@@ -1,5 +1,10 @@
 var blacklist;
 var rules;
+$("#day").each(function(i, obj){
+	console.log(obj.val());
+})
+
+
 
 self.port.on("show", function(array){
 	blacklist = array[0];
