@@ -90,8 +90,9 @@ panel.port.on("options", function(){
 
 tabs.on("activate", function(tab){
   panel.port.on("quick-add", function(){
-    var url = tab.url;
-    //do the rest;
+    var url = lib.deconstructor(tab.url);
+    ss.storage.blacklist.push(url);
+    tab.reload();
   });
 });
 
