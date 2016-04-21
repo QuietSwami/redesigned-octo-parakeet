@@ -14,7 +14,6 @@ function ruleChecker(rule){
 self.port.on("url", function(array){
 	var url = array[0];
 	var blacklist = array[1];
-	console.log(blacklist)
 	var rules = array[2];
 	rules.forEach(function(rule){
 		var check = ruleChecker(rule);

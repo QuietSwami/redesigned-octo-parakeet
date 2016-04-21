@@ -5,6 +5,7 @@ var data = require("sdk/self").data;
 var tabs = require('sdk/tabs');
 var pageMod = require("sdk/page-mod");
 var lib = require(data.url("lib.js"));
+var tabs_open = [];
 
 
 if (! ss.storage.blacklist){
@@ -51,11 +52,12 @@ function handleHide() {
 	button.state('window', {checked: false});
 }
 
+tabs.on('open', function(tab){
+  tabs_open.push(tab);
+});
+
 tabs.on('ready', function(tab){
   var blacklist = ss.storage.blacklist;
-  for (i=0; i<blacklist.length; i++){
-    console.log(blacklist[i]);
-  }
   var worker = tab.attach({
     contentScriptFile: [data.url('moment.js'), data.url("blocking.js")]
   });
@@ -80,11 +82,17 @@ panel.port.on("options", function(){
         });
         worker.port.on("new_rule", function(rule){
           ss.storage.rules.push(rule);
-          console.log(ss.storage.rules); 
         })
       });  
     }
   }); 
+});
+
+tabs.on("activate", function(tab){
+  panel.port.on("quick-add", function(){
+    var url = tab.url;
+    //do the rest;
+  });
 });
 
 function save_rules(rules){
