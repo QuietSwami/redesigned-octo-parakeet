@@ -31,7 +31,7 @@ var button = ToggleButton({
 
 var panel = panels.Panel({
   width: 180,
-  height: 180,
+  height: 150,
   contentURL: data.url("menu.html"),
   contentScriptFile: [data.url("jquery.js"), data.url("bootstrap.min.js"), data.url("menu.js")],
   contentStyleFile: data.url('menu.css'),
